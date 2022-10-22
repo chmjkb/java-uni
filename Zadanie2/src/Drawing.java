@@ -1,53 +1,82 @@
-import java.util.Arrays;
-
-public class Drawing implements SimpleDrawing {
-    int size;
-    int[][] painting;
-    int fistCord;
-    int secondCord;
-    static class GeometryImpl implements Geometry{
+public class Drawing implements SimpleDrawing{
+    public static class GeometryImpl implements Geometry{
         int size;
-        int firstCord;
-        int secondCord;
-
+        int initialFirstCord;
+        int initialSecondCord;
         @Override
         public int getSize() {
+            /*
+            Method has to return desired size of board. (user input)
+             */
             return this.size;
         }
+
         @Override
         public int getInitialFirstCoordinate() {
-            return this.firstCord;
+            /*
+            Method has to return desired first coordinate of board. (user input)
+             */
+            return initialFirstCord;
         }
+
         @Override
         public int getInitialSecondCoordinate() {
-            return this.secondCord;
+            /*
+            Method has to return desired size of board. (user input)
+             */
+            return initialSecondCord;
         }
     }
 
-    static class SegmentImpl implements Segment{
-        private int direction;
-        private int length;
-        private int color;
+    public static class SegmentImpl implements Segment{
+        int direction;
+        int color;
+        int length;
+
         @Override
         public int getDirection() {
+            /*
+            Returns direction of a segment we want to draw
+            1 -> Right
+            2 -> Up
+            -1 -> Left
+            -2 -> Down
+             */
             return this.direction;
         }
 
         @Override
         public int getLength() {
+            /*
+            Returns amount of pixels we want to color, that is number of elements of the
+            array that need to be modified
+             */
             return this.length;
         }
 
         @Override
         public int getColor() {
+            /*
+            Returns which color we want to color our segment, that is what number we'll put
+            in our elements.
+             */
             return this.color;
         }
     }
+    int size; // size of the board is (size x size)
+    int firstCord;  // x-axis
+    int secondCord; // y-axis
+    int[][] painting;
 
-    // Drawing class implementation
     @Override
-    public void setCanvasGeometry(Geometry input)
-    {
+    public void setCanvasGeometry(Geometry input) {
+        /*
+        Method responsible for allowing to pass Geometry object,
+        Gives us ability to create (input.size x input.size) array and set initial coordinates.
+         */
+        this.size = input.getSize();
+        this.firstCord = input.getInitialFirstCoordinate();
+        this.secondCord = input.getInitialSecondCoordinate();
         this.painting = new int[input.getSize()][input.getSize()];
     }
 
@@ -55,47 +84,68 @@ public class Drawing implements SimpleDrawing {
     public void draw(Segment segment) {
         switch (segment.getDirection()){
             case 1:
-                // 1 means right, so we need to increment the first coord, and leave the second as it is;
-                int targetFirstCord = this.fistCord + segment.getLength();
-                for (int currentIndex = this.fistCord; currentIndex < targetFirstCord; currentIndex++){
-                    this.painting[currentIndex][secondCord] = segment.getColor();
+                int right = this.firstCord;
+                for (int i = right; i < right + segment.getLength(); i++){
+                    this.painting[i][secondCord] = segment.getColor();
+                    firstCord++;
                 }
-
+                break;
+            case 2:
+                int left = this.secondCord;
+                for (int i = left; i < left + segment.getLength(); i++){
+                    this.painting[this.firstCord][i] = segment.getColor();
+                    this.secondCord++;
+                }
         }
     }
 
     @Override
     public int[][] getPainting() {
+        /*
+        Method responsible for returning the current state of our painting.
+        Note that if the Geometry is not initialized, the function is supposed to
+        return null.
+         */
         return this.painting;
     }
 
     @Override
     public void clear() {
-        Arrays.stream(this.painting).forEach(a -> Arrays.fill(a, 0));
+        /*
+        Method responsible for cleaning our canvas, meaning setting
+        all of arrays elements to 0s
+         */
+    }
+
+    public void printPainting(){
+        /*
+        Method responsible for printing a 2D-Array (painting) in a nice way.
+         */
+        for (int i = 0; i < this.size; i++){
+            for (int j = 0; j < this.size; j++){
+                System.out.print("[" + this.painting[j][i] + "]");
+            }
+            System.out.println("");
+        }
     }
 
     public static void main(String[] args) {
-        // Configuring board related variables
-        GeometryImpl newBoard = new GeometryImpl();
-        newBoard.size = 3;
-        newBoard.firstCord = 0;
-        newBoard.secondCord = 0;
+        GeometryImpl geometry = new GeometryImpl();
+        geometry.size = 13;
+        geometry.initialFirstCord = 3;
+        geometry.initialSecondCord = 6;
 
-        // Configuring segment object
-        SegmentImpl newSegment = new SegmentImpl();
-        newSegment.color = 1;
-        newSegment.length = 3;
-        newSegment.direction = 1;
+        SegmentImpl segment = new SegmentImpl();
+        segment.color = 1;
+        segment.length = 3;
+        segment.direction = 1;
 
-        Drawing drawing = new Drawing();
-        drawing.setCanvasGeometry(newBoard);
-        drawing.draw(newSegment);
-        for (int i = 0; i < newBoard.getSize(); i++){
-            System.out.println("i row " + i);
-            for (int j = 0; j < newBoard.getSize(); j++){
-                System.out.println(drawing.painting[j][i]);
-            }
-        }
+
+        Drawing board = new Drawing();
+        board.setCanvasGeometry(geometry);
+        System.out.println(board.firstCord + " " + board.secondCord);
+        board.draw(segment);
+        board.printPainting();
 
     }
 }
