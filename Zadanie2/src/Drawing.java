@@ -82,20 +82,58 @@ public class Drawing implements SimpleDrawing{
 
     @Override
     public void draw(Segment segment) {
-        switch (segment.getDirection()){
-            case 1:
+        switch (segment.getDirection()) {
+            case 1 -> {
                 int right = this.firstCord;
-                for (int i = right; i < right + segment.getLength(); i++){
-                    this.painting[i][secondCord] = segment.getColor();
-                    firstCord++;
+                for (int i = right; i < right + segment.getLength(); i++) {
+                    try {
+                        this.painting[i][secondCord] = segment.getColor();
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        break;
+                    }
+                    this.firstCord++;
                 }
-                break;
-            case 2:
-                int left = this.secondCord;
-                for (int i = left; i < left + segment.getLength(); i++){
-                    this.painting[this.firstCord][i] = segment.getColor();
+                this.firstCord--;
+            }
+            case 2 -> {
+                int up = this.secondCord;
+                for (int i = up; i < up + segment.getLength(); i++) {
+                    try {
+                        this.painting[this.firstCord][i] = segment.getColor();
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        break;
+                    }
                     this.secondCord++;
                 }
+                this.secondCord--;
+            }
+            case -1 -> {
+                int left = this.firstCord;
+                for (int i = left; i > left - segment.getLength(); i--) {
+                    try {
+                        this.painting[i][this.secondCord] = segment.getColor();
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        break;
+                    }
+                    this.firstCord--;
+                }
+                this.firstCord++;
+            }
+            case -2 -> {
+                int down = this.secondCord;
+                for (int i = down; i > down - segment.getLength(); i--) {
+                    try {
+                        this.painting[this.firstCord][i] = segment.getColor();
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        break;
+                    }
+                    secondCord--;
+                }
+                this.secondCord++;
+            }
+            default -> {
+                System.out.println("Wrong input!");
+            }
         }
     }
 
@@ -106,6 +144,13 @@ public class Drawing implements SimpleDrawing{
         Note that if the Geometry is not initialized, the function is supposed to
         return null.
          */
+        int[][] newPainting = new int[this.size][this.size];
+        for (int i =0; i < this.size; i++){
+            for (int j = 0; j < this.size; j++){
+                newPainting[this.size-j-1][i] = this.painting[i][j];
+            }
+        }
+        this.painting = newPainting;
         return this.painting;
     }
 
@@ -115,6 +160,11 @@ public class Drawing implements SimpleDrawing{
         Method responsible for cleaning our canvas, meaning setting
         all of arrays elements to 0s
          */
+        for (int i = 0; i < this.size; i++){
+            for (int j = 0; j < this.size; j++){
+                this.painting[i][j] = 0;
+            }
+        }
     }
 
     public void printPainting(){
@@ -123,7 +173,7 @@ public class Drawing implements SimpleDrawing{
          */
         for (int i = 0; i < this.size; i++){
             for (int j = 0; j < this.size; j++){
-                System.out.print("[" + this.painting[j][i] + "]");
+                System.out.print("[" + this.painting[i][j] + "]");
             }
             System.out.println("");
         }
@@ -131,21 +181,13 @@ public class Drawing implements SimpleDrawing{
 
     public static void main(String[] args) {
         GeometryImpl geometry = new GeometryImpl();
-        geometry.size = 13;
-        geometry.initialFirstCord = 3;
-        geometry.initialSecondCord = 6;
-
-        SegmentImpl segment = new SegmentImpl();
-        segment.color = 1;
-        segment.length = 3;
-        segment.direction = 1;
-
+        geometry.size = 5;
+        geometry.initialFirstCord = 1;
+        geometry.initialSecondCord = 2;
 
         Drawing board = new Drawing();
         board.setCanvasGeometry(geometry);
-        System.out.println(board.firstCord + " " + board.secondCord);
-        board.draw(segment);
-        board.printPainting();
+
 
     }
 }
