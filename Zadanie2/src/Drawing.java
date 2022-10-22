@@ -1,6 +1,6 @@
 public class Drawing implements SimpleDrawing {
     int size;
-
+    int[][] board = this.getPainting();
     static class GeometryImpl implements Geometry{
         int size;
         int firstCord;
@@ -47,21 +47,18 @@ public class Drawing implements SimpleDrawing {
 
     @Override
     public void draw(Segment segment) {
-        segment.getColor();
-        segment.getDirection();
-        segment.getLength();
+
     }
 
     @Override
     public int[][] getPainting() {
-        return new int[0][];
+        return new int[this.size][this.size];
     }
 
     @Override
-    public void clear() { }
+    public void clear() {}
 
     public static void main(String[] args) {
         GeometryImpl newBoard = new GeometryImpl();
-
     }
 }
