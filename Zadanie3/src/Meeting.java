@@ -6,7 +6,7 @@ import java.util.Set;
 public class Meeting implements MeetingInterface{
     int roundNumber = 1;
     Position2D currentMeetingPoint;
-    List<PawnPosition2D> allPawns = new ArrayList<>();  // Helps with keeping track of pawnIds
+    List<PawnPosition> allPawns = new ArrayList<>();  // Helps with keeping track of pawnIds
 
     @Override
     public void addPawns(List<PawnPosition> positions) {
@@ -39,23 +39,29 @@ public class Meeting implements MeetingInterface{
     @Override
     public Set<PawnPosition> getAllPawns() {
         /*
-        TODO
+        Returns all pawns represented as a set
          */
+        return new HashSet<>(this.allPawns);
+    }
+
+
+    public PawnPosition getPawnOfCertainPos(int x, int y){
+        /*
+        Returns a pawn sitting at a given position on the board if one exists
+         */
+        for (PawnPosition currentPawn: this.allPawns){
+            if (currentPawn.x() == x && currentPawn.y() == y){
+                return currentPawn;
+            }
+        }
         return null;
     }
 
-    public String getPawnListIndex(int pawnId) {
-        for (int i = 0; i < this.allPawns.size(); i++) {
-            PawnPosition2D currentPawn = this.allPawns.get(i);
-            if (currentPawn.pawnId() == pawnId) {
-                return Integer.toString(i);
-            }
-        }
-        return "No pawn with " + pawnId + "id.";
-    }
-
     public boolean isOccupied(int x, int y){
-        for (PawnPosition2D currentPawn: allPawns){
+        /*
+        Checks whether a place in the board of certain coordinates is occupied by some pawn
+         */
+        for (PawnPosition currentPawn: allPawns){
             if (currentPawn.x() == x && currentPawn.y() == y){
                 return true;
             }
@@ -63,17 +69,56 @@ public class Meeting implements MeetingInterface{
         return false;
     }
 
+    public int findPawn(int pawnId){
+        /*
+        Finds a pawn of certain pawnId and return its index from AllPawns list
+         */
+        int i = 0;
+        for (PawnPosition currentPawn : allPawns){
+            if (currentPawn.pawnId() == pawnId){
+                return i;
+            }
+            i += 1;
+        }
+        return i;
+    }
+
     @Override
     public Set<PawnPosition> getNeighbours(int pawnId) {
         Set<PawnPosition> neighbours = new HashSet<>();
-        String pawnListIndex = getPawnListIndex(pawnId);
-        PawnPosition2D pawnOfInterest = allPawns.get(Integer.parseInt(pawnListIndex));
-        int pawn_x = pawnOfInterest.x();
-        int pawn_y = pawnOfInterest.y();
+        int pawnIndex = findPawn(pawnId);
+        PawnPosition pawnOfInterest = this.allPawns.get(pawnIndex);
+        int pawnX = pawnOfInterest.x();
+        int pawnY = pawnOfInterest.y();
 
-        if (isOccupied(pawn_x + 1, pawn_y)){
-            neighbours.add(new PawnPosition2D());
+        /*
+        please don't look at the code below thx
+         */
+        if (getPawnOfCertainPos(pawnX -1, pawnY -1) != null){
+            neighbours.add(getPawnOfCertainPos(pawnX -1, pawnY -1));
         }
+        if (getPawnOfCertainPos(pawnX + 1, pawnY) != null){
+            neighbours.add(getPawnOfCertainPos(pawnX + 1, pawnY));
+        }
+        if (getPawnOfCertainPos(pawnX + 1, pawnY + 1) != null){
+            neighbours.add(getPawnOfCertainPos(pawnX + 1, pawnY + 1));
+        }
+        if (getPawnOfCertainPos(pawnX, pawnY -1) != null){
+            neighbours.add(getPawnOfCertainPos(pawnX, pawnY - 1));
+        }
+        if (getPawnOfCertainPos(pawnX, pawnY + 1) != null){
+            neighbours.add(getPawnOfCertainPos(pawnX, pawnY + 1));
+        }
+        if (getPawnOfCertainPos(pawnX - 1, pawnY - 1) != null){
+            neighbours.add(getPawnOfCertainPos(pawnX - 1, pawnY - 1));
+        }
+        if (getPawnOfCertainPos(pawnX - 1, pawnY) != null){
+            neighbours.add(getPawnOfCertainPos(pawnX - 1, pawnY));
+        }
+        if (getPawnOfCertainPos(pawnX - 1, pawnY + 1) != null){
+            neighbours.add(getPawnOfCertainPos(pawnX - 1, pawnY + 1));
+        }
+        return neighbours;
     }
 
     public static void main(String[] args) {
