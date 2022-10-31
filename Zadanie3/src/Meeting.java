@@ -1,13 +1,9 @@
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Meeting implements MeetingInterface{
     int roundNumber = 1;
     Position2D currentMeetingPoint;
-    List<PawnPosition> allPawns = new ArrayList<>();  // Helps with keeping track of pawnIds
-
+    List<PawnPosition> allPawns = new ArrayList<>();// Helps with keeping track of pawnIds
     @Override
     public void addPawns(List<PawnPosition> positions) {
         /*
@@ -32,7 +28,7 @@ public class Meeting implements MeetingInterface{
 
     public int isRoundEven(int round){
         /*
-
+        Checks if a round is even or not
          */
         if (round % 2 == 0){
             return 1;
@@ -62,48 +58,95 @@ public class Meeting implements MeetingInterface{
         if (direction.equals("bottom")){
             this.allPawns.set(pawnIndex, new PawnPosition2D(pawnId, currentX, currentY - 1));
         }
+        if (direction.equals("top")){
+            this.allPawns.set(pawnIndex, new PawnPosition2D(pawnId, currentX, currentY + 1));
+        }
 
     }
 
+
+    public void fixBoard(int i){
+        PawnPosition currentPawn = this.allPawns.get(i);
+        int dx = calculateDx(currentPawn, this.currentMeetingPoint);
+        int dy = calculateDy(currentPawn, this.currentMeetingPoint);
+
+        if (dx > dy){ // Move on the X axis
+            if (currentPawn.x() > this.currentMeetingPoint.x()){
+                if (!isOccupied(currentPawn.x() - 1, currentPawn.y())){
+                    if (currentPawn.x() > 0) {
+                        makeMove(currentPawn, "left", i);
+                    }
+                }
+            }
+            if (currentPawn.x() < this.currentMeetingPoint.x()){
+                if (!isOccupied(currentPawn.x() + 1, currentPawn.y())){
+                    makeMove(currentPawn, "right", i);
+                }
+            }
+        }
+        if (dx <= dy){
+            if (currentPawn.y() > this.currentMeetingPoint.y()){
+                if (!isOccupied(currentPawn.x(), currentPawn.y() - 1)){
+                    if (currentPawn.y() > 0) {
+                        makeMove(currentPawn, "bottom", i);
+                    }
+                }
+            }
+            if (currentPawn.y() <  this.currentMeetingPoint.y()){
+                if (!isOccupied(currentPawn.x(), currentPawn.y() + 1)){
+                    makeMove(currentPawn, "top", i);
+                }
+            }
+        }
+    }
     @Override
     public void move() {
         /*
         TODO
          */
-        switch (isRoundEven(this.roundNumber)){
-            case 1:
-                for (int i = 0; i < this.allPawns.size(); i++){
-                    PawnPosition currentPawn = this.allPawns.get(i);
-                    int dx = calculateDx(currentPawn, this.currentMeetingPoint);
-                    int dy = calculateDy(currentPawn, this.currentMeetingPoint);
+        boolean active = true;
+        while (active) {
+            System.out.println("Round no. " + this.roundNumber);
+            Collections.reverse(this.allPawns);
+            List<PawnPosition> temp = new ArrayList<>(this.allPawns);
+            for (int i = 0; i <  this.allPawns.size() - 1; i++){
+                System.out.println("iteration no. " + i);
+                fixBoard(i);
+            }
+            if (temp.equals(this.allPawns)){
+                active = false;
+                System.out.println("Didnt make a move!");
+            }
+            this.roundNumber++;
 
-                    if (dx > dy){ // Move on the X axis
-                        if (currentPawn.x() > this.currentMeetingPoint.x()){
-                            if (!isOccupied(currentPawn.x() - 1, currentPawn.y())){
-                                makeMove(currentPawn, "left", i);
-                            }
-                        }
-                        if (currentPawn.x() < this.currentMeetingPoint.x()){
-                            if (!isOccupied(currentPawn.x() + 1, currentPawn.y())){
-                                makeMove(currentPawn, "right", i);
-                            }
-                        }
-                    }
-                    if (dx <= dy){
-                        if (currentPawn.y() > this.currentMeetingPoint.y()){
-                            if (!isOccupied(currentPawn.x(), currentPawn.y() - 1)){
-                                makeMove(currentPawn, "bottom", i);
-                            }
-                        }
-                        if (currentPawn.y() <  this.currentMeetingPoint.y()){
-                            if (!isOccupied(currentPawn.x(), currentPawn.y() + 1)){
-                                makeMove(currentPawn, "top", i);
-                            }
-                        }
-                    }
-                }
+
+//            if (isRoundEven(this.roundNumber) == 1){
+//                List<PawnPosition> temp = new ArrayList<>(this.allPawns);
+//                for (int i = 0; i < this.allPawns.size() - 1; i++) {
+//                    System.out.println("Iteration no. " + i);
+//                    fixBoard(i);
+//
+//                }
+//                if (this.allPawns.equals(temp)) {
+//                    active = false;
+//                }
+//                this.roundNumber++;
+//            }
+//
+//            else if (isRoundEven(this.roundNumber) == 0){
+//                List<PawnPosition> temp_rev = new ArrayList<>(this.allPawns);
+//                for (int i = this.allPawns.size() - 1; i == 0; i--) {
+//                    System.out.println("Iteration no. " + i);
+//                    fixBoard(i);
+//                }
+//                if (this.allPawns.equals(temp_rev)) {
+//                    active = false;
+//                }
+//                this.roundNumber++;
+//            }
         }
     }
+
     @Override
     public Set<PawnPosition> getAllPawns() {
         /*
@@ -130,7 +173,10 @@ public class Meeting implements MeetingInterface{
         Checks whether a place in the board of certain coordinates is occupied by some pawn
          */
         for (PawnPosition currentPawn: allPawns){
-            if (currentPawn.x() == x && currentPawn.y() == y){
+            if ((currentPawn.x() == currentMeetingPoint.x() && currentPawn.y() == currentMeetingPoint.y())){
+                return true;
+            }
+            if ((currentPawn.x() == x && currentPawn.y() == y)){
                 return true;
             }
         }
@@ -191,12 +237,17 @@ public class Meeting implements MeetingInterface{
 
     public static void main(String[] args) {
         List<PawnPosition> newPawnsGame = new ArrayList<>();
-        newPawnsGame.add(new PawnPosition2D(1, 0, 0));
-        newPawnsGame.add(new PawnPosition2D(2, 1, 0));
+        newPawnsGame.add(new PawnPosition2D(1, 6, 0));
+        newPawnsGame.add(new PawnPosition2D(2, 2, 2));
+        newPawnsGame.add(new PawnPosition2D(3, 5, 5));
+        newPawnsGame.add(new PawnPosition2D(4, 10, 20));
+
+
         Meeting myMeeting = new Meeting();
+        myMeeting.addMeetingPoint(new Position2D(5, 3));
         myMeeting.addPawns(newPawnsGame);
 
-        myMeeting.makeMove(myMeeting.allPawns.get(1), "bottom", 1);
+        myMeeting.move();
         System.out.println(myMeeting.getAllPawns());
     }
 }
