@@ -2,7 +2,7 @@ import java.util.*;
 
 public class Meeting implements MeetingInterface{
     Position2D currentMeetingPoint;
-    List<PawnPosition> allPawns = new ArrayList<>();// Helps with keeping track of pawnIds
+    List<PawnPosition> allPawns = new ArrayList<>();
     @Override
     public void addPawns(List<PawnPosition> positions) {
         /*
@@ -17,6 +17,7 @@ public class Meeting implements MeetingInterface{
             }
         }
     }
+
     @Override
     public void addMeetingPoint(Position meetingPointPosition) {
         /*
@@ -56,7 +57,6 @@ public class Meeting implements MeetingInterface{
 
     }
 
-
     public void fixBoard(int i){
         PawnPosition currentPawn = this.allPawns.get(i);
         int dx = calculateDx(currentPawn, this.currentMeetingPoint);
@@ -94,6 +94,7 @@ public class Meeting implements MeetingInterface{
             }
         }
     }
+
     @Override
     public void move() {
         /*
@@ -167,7 +168,6 @@ public class Meeting implements MeetingInterface{
         Checks whether a place in the board of certain coordinates is occupied by some pawn
          */
         for (PawnPosition currentPawn: allPawns){
-
             if ((currentPawn.x() == x && currentPawn.y() == y)){
                 return false;
             }
@@ -179,14 +179,34 @@ public class Meeting implements MeetingInterface{
         /*
         Finds a pawn of certain pawnId and return its index from AllPawns list
          */
-        int i = 0;
-        for (PawnPosition currentPawn : allPawns){
+//        int i = 0;
+//        for (PawnPosition currentPawn : allPawns){
+//            if (currentPawn.pawnId() == pawnId){
+//                return i;
+//            }
+//            i += 1;
+//        }
+        for (int i = 0; i < this.allPawns.size(); i++) {
+            PawnPosition currentPawn = this.allPawns.get(i);
             if (currentPawn.pawnId() == pawnId){
                 return i;
             }
-            i += 1;
         }
         return null;
+    }
+
+    public void printPawns(){
+        int[][] board = new int[10][10];
+        for (int i = 0; i < 10; i++){
+            for (int j = 0; j < 10; j++){
+                if (isNotOccupied(i, j)){
+                    System.out.print(" [] ");
+                    continue;
+                }
+                System.out.print(" [X] ");
+            }
+            System.out.println("");
+        }
     }
 
     @Override
@@ -246,7 +266,6 @@ public class Meeting implements MeetingInterface{
         myMeeting.addPawns(newPawnsGame);
 
         myMeeting.move();
-        System.out.println(myMeeting.getAllPawns());
-        System.out.println(myMeeting.currentMeetingPoint);
+        myMeeting.printPawns();
     }
 }
