@@ -117,32 +117,32 @@ public class Meeting implements MeetingInterface{
             /*
             Code below is an alternative version of what i've written before. Not sure but it might be useful
             in case i would want to change the move method
-             */
 
-//            if (isRoundEven(this.roundNumber) == 1){
-//                List<PawnPosition> temp = new ArrayList<>(this.allPawns);
-//                for (int i = 0; i < this.allPawns.size() - 1; i++) {
-//                    System.out.println("Iteration no. " + i);
-//                    fixBoard(i);
-//
-//                }
-//                if (this.allPawns.equals(temp)) {
-//                    active = false;
-//                }
-//                this.roundNumber++;
-//            }
-//
-//            else if (isRoundEven(this.roundNumber) == 0){
-//                List<PawnPosition> temp_rev = new ArrayList<>(this.allPawns);
-//                for (int i = this.allPawns.size() - 1; i == 0; i--) {
-//                    System.out.println("Iteration no. " + i);
-//                    fixBoard(i);
-//                }
-//                if (this.allPawns.equals(temp_rev)) {
-//                    active = false;
-//                }
-//                this.roundNumber++;
-//            }
+            if (isRoundEven(this.roundNumber) == 1){
+                List<PawnPosition> temp = new ArrayList<>(this.allPawns);
+                for (int i = 0; i < this.allPawns.size() - 1; i++) {
+                    System.out.println("Iteration no. " + i);
+                    fixBoard(i);
+
+                }
+                if (this.allPawns.equals(temp)) {
+                    active = false;
+                }
+                this.roundNumber++;
+            }
+
+            else if (isRoundEven(this.roundNumber) == 0){
+                List<PawnPosition> temp_rev = new ArrayList<>(this.allPawns);
+                for (int i = this.allPawns.size() - 1; i == 0; i--) {
+                    System.out.println("Iteration no. " + i);
+                    fixBoard(i);
+                }
+                if (this.allPawns.equals(temp_rev)) {
+                    active = false;
+                }
+                this.roundNumber++;
+            }
+             */
         }
     }
 
@@ -203,7 +203,7 @@ public class Meeting implements MeetingInterface{
                 if (isNotOccupied(i, j)){
                     System.out.print("[  ]");
                     continue;
-                } else if (i == 5 && j == 3){
+                } else if (i == this.currentMeetingPoint.x() && j == this.currentMeetingPoint.y()){
                     System.out.print("[MP]");
                     continue;
                 }
@@ -216,7 +216,7 @@ public class Meeting implements MeetingInterface{
     @Override
     public Set<PawnPosition> getNeighbours(int pawnId) {
         /*
-        Checks 8 spots near the pawn with given pawnId and returs its neighbours
+        Checks 8 spots near the pawn with given pawnId and returns its neighbours
          */
         Set<PawnPosition> neighbours = new HashSet<>();
         int pawnIndex = findPawn(pawnId);
@@ -271,8 +271,9 @@ public class Meeting implements MeetingInterface{
         myMeeting.addPawns(newPawnsGame);
 
         myMeeting.move();
-        myMeeting.currentMeetingPoint = new Position2D(9, 9);
-        myMeeting.move();
+        System.out.println(myMeeting.getAllPawns());
+//        myMeeting.currentMeetingPoint = new Position2D(9, 9);
+//        myMeeting.move();
         myMeeting.printPawns();
     }
 }
