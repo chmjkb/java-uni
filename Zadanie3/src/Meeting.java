@@ -114,6 +114,10 @@ public class Meeting implements MeetingInterface{
                 System.out.println("Didnt make a move!");
             }
 
+            /*
+            Code below is an alternative version of what i've written before. Not sure but it might be useful
+            in case i would want to change the move method
+             */
 
 //            if (isRoundEven(this.roundNumber) == 1){
 //                List<PawnPosition> temp = new ArrayList<>(this.allPawns);
@@ -179,13 +183,6 @@ public class Meeting implements MeetingInterface{
         /*
         Finds a pawn of certain pawnId and return its index from AllPawns list
          */
-//        int i = 0;
-//        for (PawnPosition currentPawn : allPawns){
-//            if (currentPawn.pawnId() == pawnId){
-//                return i;
-//            }
-//            i += 1;
-//        }
         for (int i = 0; i < this.allPawns.size(); i++) {
             PawnPosition currentPawn = this.allPawns.get(i);
             if (currentPawn.pawnId() == pawnId){
@@ -196,14 +193,21 @@ public class Meeting implements MeetingInterface{
     }
 
     public void printPawns(){
+        /*
+        Prints pawns in a readable way, helps with testing
+         */
         int[][] board = new int[10][10];
         for (int i = 0; i < 10; i++){
             for (int j = 0; j < 10; j++){
+
                 if (isNotOccupied(i, j)){
-                    System.out.print(" [] ");
+                    System.out.print("[  ]");
+                    continue;
+                } else if (i == 5 && j == 3){
+                    System.out.print("[MP]");
                     continue;
                 }
-                System.out.print(" [X] ");
+                System.out.print("[" + i + j + "]");
             }
             System.out.println("");
         }
@@ -212,7 +216,7 @@ public class Meeting implements MeetingInterface{
     @Override
     public Set<PawnPosition> getNeighbours(int pawnId) {
         /*
-
+        Checks 8 spots near the pawn with given pawnId and returs its neighbours
          */
         Set<PawnPosition> neighbours = new HashSet<>();
         int pawnIndex = findPawn(pawnId);
@@ -258,6 +262,7 @@ public class Meeting implements MeetingInterface{
         newPawnsGame.add(new PawnPosition2D(3, 5, 5));
         newPawnsGame.add(new PawnPosition2D(4, 10, 23));
         newPawnsGame.add(new PawnPosition2D(5, 13, 17));
+        newPawnsGame.add(new PawnPosition2D(6, 9, 0));
 
 
 
@@ -265,6 +270,8 @@ public class Meeting implements MeetingInterface{
         myMeeting.addMeetingPoint(new Position2D(5, 3));
         myMeeting.addPawns(newPawnsGame);
 
+        myMeeting.move();
+        myMeeting.currentMeetingPoint = new Position2D(9, 9);
         myMeeting.move();
         myMeeting.printPawns();
     }
