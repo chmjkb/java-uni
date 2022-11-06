@@ -76,7 +76,7 @@ public class Meeting implements MeetingInterface{
                 }
             }
         }
-        else {
+        if (dx <= dy) {
             if (currentPawn.y() > this.currentMeetingPoint.y()){
                 if (isNotOccupied(currentPawn.x(), currentPawn.y() - 1)){
                     if (currentPawn.y() > 0) {
@@ -102,7 +102,6 @@ public class Meeting implements MeetingInterface{
          */
         boolean active = true;
         while (active) {
-            Collections.reverse(this.allPawns);
             List<PawnPosition> temp = new ArrayList<>(this.allPawns);
             for (int i = 0; i <  this.allPawns.size(); i++){
                 System.out.println("iteration no. " + i);
@@ -113,6 +112,7 @@ public class Meeting implements MeetingInterface{
                 active = false;
                 System.out.println("Didnt make a move!");
             }
+            Collections.reverse(this.allPawns);
 
             /*
             Code below is an alternative version of what i've written before. Not sure but it might be useful
@@ -242,8 +242,8 @@ public class Meeting implements MeetingInterface{
         if (getPawnOfCertainPos(pawnX, pawnY + 1) != null){
             neighbours.add(getPawnOfCertainPos(pawnX, pawnY + 1));
         }
-        if (getPawnOfCertainPos(pawnX - 1, pawnY - 1) != null){
-            neighbours.add(getPawnOfCertainPos(pawnX - 1, pawnY - 1));
+        if (getPawnOfCertainPos(pawnX + 1, pawnY - 1) != null){
+            neighbours.add(getPawnOfCertainPos(pawnX + 1, pawnY - 1));
         }
         if (getPawnOfCertainPos(pawnX - 1, pawnY) != null){
             neighbours.add(getPawnOfCertainPos(pawnX - 1, pawnY));
@@ -255,25 +255,25 @@ public class Meeting implements MeetingInterface{
     }
 
     public static void main(String[] args) {
-        List<PawnPosition> newPawnsGame = new ArrayList<>();
-        newPawnsGame.add(new PawnPosition2D(1, 123, 12));
-        newPawnsGame.add(new PawnPosition2D(1, 6, 0));
-        newPawnsGame.add(new PawnPosition2D(2, 2, 2));
-        newPawnsGame.add(new PawnPosition2D(3, 5, 5));
-        newPawnsGame.add(new PawnPosition2D(4, 10, 23));
-        newPawnsGame.add(new PawnPosition2D(5, 13, 17));
-        newPawnsGame.add(new PawnPosition2D(6, 9, 0));
-
-
-
-        Meeting myMeeting = new Meeting();
-        myMeeting.addMeetingPoint(new Position2D(5, 3));
-        myMeeting.addPawns(newPawnsGame);
-
-        myMeeting.move();
-        System.out.println(myMeeting.getAllPawns());
-//        myMeeting.currentMeetingPoint = new Position2D(9, 9);
+//        List<PawnPosition> newPawnsGame = new ArrayList<>();
+//        newPawnsGame.add(new PawnPosition2D(1, 123, 12));
+//        newPawnsGame.add(new PawnPosition2D(1, 6, 0));
+//        newPawnsGame.add(new PawnPosition2D(2, 2, 2));
+//        newPawnsGame.add(new PawnPosition2D(3, 5, 5));
+//        newPawnsGame.add(new PawnPosition2D(4, 10, 23));
+//        newPawnsGame.add(new PawnPosition2D(5, 13, 17));
+//        newPawnsGame.add(new PawnPosition2D(6, 9, 0));
+//
+//
+//
+//        Meeting myMeeting = new Meeting();
+//        myMeeting.addMeetingPoint(new Position2D(5, 3));
+//        myMeeting.addPawns(newPawnsGame);
+//
 //        myMeeting.move();
-        myMeeting.printPawns();
+//        System.out.println(myMeeting.getAllPawns());
+////        myMeeting.currentMeetingPoint = new Position2D(9, 9);
+////        myMeeting.move();
+//        myMeeting.printPawns();
     }
 }
