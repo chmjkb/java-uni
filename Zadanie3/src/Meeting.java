@@ -58,6 +58,9 @@ public class Meeting implements MeetingInterface{
     }
 
     public void fixBoard(int i){
+        /*
+        Logic behind the pawns movement
+         */
         PawnPosition currentPawn = this.allPawns.get(i);
         int dx = calculateDx(currentPawn, this.currentMeetingPoint);
         int dy = calculateDy(currentPawn, this.currentMeetingPoint);
@@ -98,7 +101,7 @@ public class Meeting implements MeetingInterface{
     @Override
     public void move() {
         /*
-        TODO
+        Method responsible for moving the pawns across the board according to provided instructions
          */
         boolean active = true;
         while (active) {
@@ -110,13 +113,13 @@ public class Meeting implements MeetingInterface{
             }
             if (temp.equals(this.allPawns)){
                 active = false;
-                System.out.println("Didnt make a move!");
+                System.out.println("Didn't make a move!");
             }
             Collections.reverse(this.allPawns);
 
             /*
-            Code below is an alternative version of what i've written before. Not sure but it might be useful
-            in case i would want to change the move method
+            Code below is an alternative version of what I've written before. Not sure but it might be useful
+            in case I would want to change the move method
 
             if (isRoundEven(this.roundNumber) == 1){
                 List<PawnPosition> temp = new ArrayList<>(this.allPawns);
@@ -196,9 +199,8 @@ public class Meeting implements MeetingInterface{
         /*
         Prints pawns in a readable way, helps with testing
          */
-        int[][] board = new int[10][10];
-        for (int i = 0; i < 10; i++){
-            for (int j = 0; j < 10; j++){
+        for (int i = 0; i < 30; i++){
+            for (int j = 0; j < 30; j++){
 
                 if (isNotOccupied(i, j)){
                     System.out.print("[  ]");
@@ -209,7 +211,7 @@ public class Meeting implements MeetingInterface{
                 }
                 System.out.print("[" + i + j + "]");
             }
-            System.out.println("");
+            System.out.print("\n");
         }
     }
 
@@ -224,9 +226,6 @@ public class Meeting implements MeetingInterface{
         int pawnX = pawnOfInterest.x();
         int pawnY = pawnOfInterest.y();
 
-        /*
-        please don't look at the code below thx
-         */
         if (getPawnOfCertainPos(pawnX -1, pawnY -1) != null){
             neighbours.add(getPawnOfCertainPos(pawnX - 1, pawnY - 1));
         }
@@ -252,28 +251,5 @@ public class Meeting implements MeetingInterface{
             neighbours.add(getPawnOfCertainPos(pawnX - 1, pawnY + 1));
         }
         return neighbours;
-    }
-
-    public static void main(String[] args) {
-//        List<PawnPosition> newPawnsGame = new ArrayList<>();
-//        newPawnsGame.add(new PawnPosition2D(1, 123, 12));
-//        newPawnsGame.add(new PawnPosition2D(1, 6, 0));
-//        newPawnsGame.add(new PawnPosition2D(2, 2, 2));
-//        newPawnsGame.add(new PawnPosition2D(3, 5, 5));
-//        newPawnsGame.add(new PawnPosition2D(4, 10, 23));
-//        newPawnsGame.add(new PawnPosition2D(5, 13, 17));
-//        newPawnsGame.add(new PawnPosition2D(6, 9, 0));
-//
-//
-//
-//        Meeting myMeeting = new Meeting();
-//        myMeeting.addMeetingPoint(new Position2D(5, 3));
-//        myMeeting.addPawns(newPawnsGame);
-//
-//        myMeeting.move();
-//        System.out.println(myMeeting.getAllPawns());
-////        myMeeting.currentMeetingPoint = new Position2D(9, 9);
-////        myMeeting.move();
-//        myMeeting.printPawns();
     }
 }
