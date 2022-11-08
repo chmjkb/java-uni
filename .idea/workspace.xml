@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="6b5cde74-43af-4dc2-854f-1d963cd924bf" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/Cwiczenia/Cwiczenia.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cwiczenia/src/Box.java" beforeDir="false" afterPath="$PROJECT_DIR$/Cwiczenia/src/B.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cwiczenia/src/Hello.java" beforeDir="false" afterPath="$PROJECT_DIR$/Cwiczenia/src/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Zadanie1/Zadanie1.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Zadanie2/Zadanie2.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Zadanie3/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Zadanie3/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Zadanie3/Zadanie3.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Zadanie3/src/PawnPosition2D.java" beforeDir="false" afterPath="$PROJECT_DIR$/Zadanie3/src/PawnPosition2D.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Zadanie3/src/Position2D.java" beforeDir="false" afterPath="$PROJECT_DIR$/Zadanie3/src/Position2D.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="2HFwOnAGd3lhkewcNIr8EN71Ubt" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "last_opened_file_path": "/Users/jakubchmura/Desktop/Semestr III/Java_Uni/Java_Uni"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="6b5cde74-43af-4dc2-854f-1d963cd924bf" name="Changes" comment="" />
+      <created>1667894109559</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1667894109559</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
