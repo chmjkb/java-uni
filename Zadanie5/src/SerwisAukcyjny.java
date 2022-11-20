@@ -55,15 +55,15 @@ public class SerwisAukcyjny implements Aukcja{
                     cenaPoczatkowa = aktualnaCena;
                 }
 
-                if (offer > aktualnaCena) {
+                if (offer >= aktualnaCena) {
                     aktualnaCena = offer;
                     currentWinner = user;
                 }
                 if (cenaPoczatkowa <= offer) {
                     latestBidder = user;
-                    aktualnaOferta = offer;
                     offers.put(user, offer);
                 }
+                aktualnaOferta = offer;
                 notifySubs();
             }
 
@@ -144,6 +144,9 @@ public class SerwisAukcyjny implements Aukcja{
 
     @Override
     public void subskrypcjaPowiadomieĹ(String username, int identyfikatorPrzedmiotuAukcji) {
+        /*
+        User wants to get notified if his bid gets beaten
+         */
         User user = findUserOnUsername(username);
         PrzedmiotAukcji auction = findAuctionOnId(identyfikatorPrzedmiotuAukcji);
         if (user != null && auction != null) {
@@ -153,6 +156,9 @@ public class SerwisAukcyjny implements Aukcja{
 
     @Override
     public void rezygnacjaZPowiadomieĹ(String username, int identyfikatorPrzedmiotuAukcji) {
+        /*
+        User doesn't want to be notified anymore
+         */
         User user = findUserOnUsername(username);
         PrzedmiotAukcji auction = findAuctionOnId(identyfikatorPrzedmiotuAukcji);
         if (user != null && auction != null) {
@@ -162,6 +168,9 @@ public class SerwisAukcyjny implements Aukcja{
 
     @Override
     public void oferta(String username, int identyfikatorPrzedmiotuAukcji, int oferowanaKwota) {
+        /*
+        Sending a new offer to certain auction by certain user
+         */
         PrzedmiotAukcji auction = findAuctionOnId(identyfikatorPrzedmiotuAukcji);
         User user = findUserOnUsername(username);
         if (user != null && auction != null) {
@@ -171,13 +180,23 @@ public class SerwisAukcyjny implements Aukcja{
 
     @Override
     public void koniecAukcji(int identyfikatorPrzedmiotuAukcji) {
+        /*
+        Finishes an auction
+         */
         PrzedmiotAukcji auction = findAuctionOnId(identyfikatorPrzedmiotuAukcji);
         auction.finished = true;
     }
 
     @Override
     public String ktoWygrywa(int identyfikatorPrzedmiotuAukcji) {
+        /*
+        Returns a current winner for certain auctiom
+         */
         PrzedmiotAukcji auction = findAuctionOnId(identyfikatorPrzedmiotuAukcji);
+
+        if (auction.currentWinner == null){
+            return null;
+        }
         return auction.currentWinner.username;
     }
 
