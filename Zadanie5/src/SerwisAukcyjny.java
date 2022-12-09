@@ -12,197 +12,165 @@ public class SerwisAukcyjny implements Aukcja{
             username = user;
             contactPoint = contact;
         }
-
-        public void update(PrzedmiotAukcji auction){
-            contactPoint.przebitoTwojÄOfertÄ(auction);
+        public void notifySub(Aukcja.PrzedmiotAukcji p){
+            contactPoint.przebitoTwojÄOfertÄ(p);
         }
     }
 
+    class Offer{
+        User user;
+        int value;
+        public Offer(User u, int o){
+            user = u;
+            value = o;
+        }
+
+
+    }
+
     class PrzedmiotAukcji implements Aukcja.PrzedmiotAukcji{
-        int identyfikator;
-        int cenaPoczatkowa;
-        String nazwaPrzedmiotu;
-        int aktualnaOferta;
-        boolean finished = false;
-        int aktualnaCena;
-        User currentWinner;
-        User latestBidder;
-        ArrayList<User> subs = new ArrayList<>();
-        Map<User, Integer> offers = new HashMap<>();
+        int id;
+        String name;
+        int currentOffer;
+        int currentPrice;
 
-        public boolean isThereAnyOffer(){
-            return !offers.isEmpty();
+        public PrzedmiotAukcji(int i, String n){
+            id = id;
+            name = n;
         }
-
-        public void notifySubs(){
-            /*
-            Notifies all subs about the new offer
-             */
-            for (User sub : subs) {
-                if (offers.get(sub) != null && (offers.get(sub) < aktualnaCena &&
-                        offers.get(sub) < aktualnaOferta) && sub != latestBidder ) {
-                    sub.update(this);
-                }
-            }
-        }
-
-        public void newOffer(User user, Integer offer){
-            /*
-            Adds a new offer
-             */
-            if (!finished) {
-                if (!isThereAnyOffer()) {
-                    cenaPoczatkowa = aktualnaCena;
-                }
-
-                if (offer >= aktualnaCena) {
-                    aktualnaCena = offer;
-                    currentWinner = user;
-                }
-                if (cenaPoczatkowa <= offer) {
-                    latestBidder = user;
-                    offers.put(user, offer);
-                }
-                aktualnaOferta = offer;
-                notifySubs();
-            }
-
-        }
-
         @Override
         public int identyfikator() {
-            return identyfikator;
+            return id;
         }
 
         @Override
         public String nazwaPrzedmiotu() {
-            return nazwaPrzedmiotu;
+            return name;
         }
 
         @Override
         public int aktualnaOferta() {
-            return aktualnaOferta;
+            return findAuctionOnId(identyfikator()).latestBid;
         }
 
         @Override
         public int aktualnaCena() {
-            return aktualnaCena;
-        }
-
-        public void subscribe(User user){
-            subs.add(user);
-        }
-
-        public void unsubscribe(User user){
-            subs.remove(user);
+            return findAuctionOnId(identyfikator()).highestBid;
         }
     }
 
-    List<PrzedmiotAukcji> allAuctions = new ArrayList<>();
-    List<User> allUsers = new ArrayList<>();
+    class LepszyPrzedmiotAukcji{
+        Aukcja.PrzedmiotAukcji przedmiotAukcji;
+        List<Offer> offers = new ArrayList<>();
+        List<User> subs = new ArrayList<>();
+        int highestBid;
+        int latestBid;
+        User currentWinner;
 
-    public User findUserOnUsername(String username){
-        /*
-        Searches for a user in all users list based on given username
-         */
-        for (User user : allUsers){
-            if (user.username.equals(username)){
-                return user;
+        public LepszyPrzedmiotAukcji(Aukcja.PrzedmiotAukcji p){
+            przedmiotAukcji = p;
+        }
+
+        public void notifySubs(){
+            for (Offer offer : offers){
+                if (subs.contains(offer.user)){ // if the user has made an offer and is subscribed
+                    if (offer.value < highestBid || offer.value < latestBid){
+                        offer.user.notifySub(new PrzedmiotAukcji(przedmiotAukcji.identyfikator(),
+                                przedmiotAukcji.nazwaPrzedmiotu()));
+                    }
+                }
             }
         }
-        return null;
+
+        public boolean checkIfUserBid(User u){
+            for (Offer offer : offers){
+                if (offer.user.username.equals(u.username)){
+                    return true;
+                }
+            }
+            return false;
+        }
+
+
+        public void newOffer(User user, int offer){
+            if (offer > highestBid){
+                highestBid = offer;
+                currentWinner = user;
+            }
+            for (int i = 0; i < offers.size(); i++){
+                if (offers.get(i).user.username.equals(user.username)){
+                    offers.set(i, new Offer(user, offer));
+                    break;
+                }
+            }
+            latestBid = offer;
+
+            notifySubs();
+        }
+
+        public void subscribe(User sub){
+            subs.add(sub);
+        }
+
+        public void unsubscribe(User sub){
+            subs.remove(sub);
+        }
+
+
     }
 
-    public PrzedmiotAukcji findAuctionOnId(int identyfikatorPrzedmiotuAukcji){
-        /*
-        Finds an auction in all auctions list based on given auction id
-         */
-        for (PrzedmiotAukcji auction : allAuctions){
-            if (auction.identyfikator() == identyfikatorPrzedmiotuAukcji){
+    public LepszyPrzedmiotAukcji findAuctionOnId(int id){
+        for (LepszyPrzedmiotAukcji auction : allAuctions){
+            if (auction.przedmiotAukcji.identyfikator() == id){
                 return auction;
             }
         }
         return null;
     }
 
+    List<LepszyPrzedmiotAukcji> allAuctions = new ArrayList<>();
+
+
+
+
     @Override
     public void dodajUĹźytkownika(String username, Powiadomienie kontakt) {
-        /*
-        Adds user to the users list
-         */
-        allUsers.add(new User(username, kontakt));
+
     }
 
     @Override
     public void dodajPrzedmiotAukcji(Aukcja.PrzedmiotAukcji przedmiot) {
-        /*
-        Adds a new auction to the auctions list
-         */
-        PrzedmiotAukcji auction = (PrzedmiotAukcji) przedmiot;
-        allAuctions.add(auction);
+
     }
+
 
     @Override
     public void subskrypcjaPowiadomieĹ(String username, int identyfikatorPrzedmiotuAukcji) {
-        /*
-        User wants to get notified if his bid gets beaten
-         */
-        User user = findUserOnUsername(username);
-        PrzedmiotAukcji auction = findAuctionOnId(identyfikatorPrzedmiotuAukcji);
-        if (user != null && auction != null) {
-            auction.subscribe(user);
-        }
+
     }
 
     @Override
     public void rezygnacjaZPowiadomieĹ(String username, int identyfikatorPrzedmiotuAukcji) {
-        /*
-        User doesn't want to be notified anymore
-         */
-        User user = findUserOnUsername(username);
-        PrzedmiotAukcji auction = findAuctionOnId(identyfikatorPrzedmiotuAukcji);
-        if (user != null && auction != null) {
-            auction.unsubscribe(user);
-        }
+
     }
 
     @Override
     public void oferta(String username, int identyfikatorPrzedmiotuAukcji, int oferowanaKwota) {
-        /*
-        Sending a new offer to certain auction by certain user
-         */
-        PrzedmiotAukcji auction = findAuctionOnId(identyfikatorPrzedmiotuAukcji);
-        User user = findUserOnUsername(username);
-        if (user != null && auction != null) {
-            auction.newOffer(user, oferowanaKwota);
-        }
+
     }
 
     @Override
     public void koniecAukcji(int identyfikatorPrzedmiotuAukcji) {
-        /*
-        Finishes an auction
-         */
-        PrzedmiotAukcji auction = findAuctionOnId(identyfikatorPrzedmiotuAukcji);
-        auction.finished = true;
+
     }
 
     @Override
     public String ktoWygrywa(int identyfikatorPrzedmiotuAukcji) {
-        /*
-        Returns a current winner for certain auctiom
-         */
-        PrzedmiotAukcji auction = findAuctionOnId(identyfikatorPrzedmiotuAukcji);
-
-        if (auction.currentWinner == null){
-            return null;
-        }
-        return auction.currentWinner.username;
+        return null;
     }
 
     @Override
     public int najwyĹźszaOferta(int identyfikatorPrzedmiotuAukcji) {
-        PrzedmiotAukcji auction = findAuctionOnId(identyfikatorPrzedmiotuAukcji);
-        return auction.aktualnaCena();
+        return 0;
     }
 }
