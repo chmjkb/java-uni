@@ -1,8 +1,10 @@
 import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Enumeration;
 import java.util.Stack;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 class Archivizer implements ArchivizerInterface{
@@ -13,13 +15,12 @@ class Archivizer implements ArchivizerInterface{
         try (FileInputStream fis = new FileInputStream(file)) {
             ZipEntry entry = new ZipEntry(base);
             zos.putNextEntry(entry);
-            byte[] buffer = new byte[1024];
-            int length;
-            while ((length = fis.read(buffer)) >= 0) {
-                zos.write(buffer, 0, length);
+            int b;
+            while ((b = fis.read()) != -1) {
+                zos.write(b);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("File error!");
         }
     }
 
@@ -29,9 +30,12 @@ class Archivizer implements ArchivizerInterface{
         Compresses a directory located in dir parameter and stores it in filename.zip
          */
         File directory = new File(dir);
+        if (!filename.contains(".zip")){
+            filename += ".zip";
+        }
         File zip = new File(filename);
 
-        try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zip + ".zip"))){
+        try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zip))){
             Stack<File> stack = new Stack<>();      // Stack for holding the directories
             stack.push(directory);                  // Pushing root to the stack
 
@@ -52,38 +56,39 @@ class Archivizer implements ArchivizerInterface{
             }
 
         } catch (IOException e){
-            e.printStackTrace();
+            System.out.println("File error");
         }
         return (int) zip.length();
     }
 
+
     @Override
     public void decompress(String filename, String dir) {
-        File destinationDir = new File(dir);
-        if(!destinationDir.exists()) destinationDir.mkdirs();
-        byte[] buffer = new byte[1024];
-        try (ZipInputStream zis = new ZipInputStream(new FileInputStream(filename))){
-            ZipEntry ze = zis.getNextEntry();
-            while (ze != null){
-                String f = ze.getName();
-                File newFile = new File(dir + File.separator + f);
-                new File(newFile.getParent()).mkdirs();
-                FileOutputStream fos = new FileOutputStream(newFile);
-                int len;
-                while ((len = zis.read(buffer)) > 0) {
-                    fos.write(buffer, 0, len);
-                }
-                fos.close();
-                ze = zis.getNextEntry();
-            }
-            zis.closeEntry();
-        } catch (IOException ex){
-            System.out.println("No file!");
+        if (!filename.contains(".zip")) {
+            filename += ".zip";
         }
+        try (ZipFile zf = new ZipFile(filename)) {
+            Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zf.entries(); // Generating entries of a zip file
+            while (entries.hasMoreElements()) {                                   // Iterating over entries
+                ZipEntry e = entries.nextElement();
+                String currentFilename = e.getName();
+                File newFile = new File(dir + File.separator + currentFilename);
+                Files.createDirectories(newFile.getParentFile().toPath());
 
-    }
-
-    public static void main(String[] args) {
-        Archivizer arch = new Archivizer();
+                try (InputStream is = zf.getInputStream(e)) {
+                    FileOutputStream fos = new FileOutputStream(newFile);       // Handling output stream
+                    int b;
+                    while ((b = is.read()) != -1) {
+                        fos.write(b);
+                    }
+                    // Closing stream
+                    fos.close();
+                }
+            }
+            // Closing zipfile
+            zf.close();
+        } catch (IOException e) {
+            System.out.println("File error");
+        }
     }
 }
