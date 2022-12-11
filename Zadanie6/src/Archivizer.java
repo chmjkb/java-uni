@@ -1,60 +1,89 @@
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.*;
+import java.nio.file.Path;
+import java.util.Stack;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
-//https://www.youtube.com/watch?v=7xGmuyvZksY&t=588
-public class Archivizer implements ArchivizerInterface{
-    public List<String> listFiles(String directoryPath) {
+class Archivizer implements ArchivizerInterface{
+    private static void addFileToZip(File file, String base, ZipOutputStream zos) {
         /*
-        Lists all files in a given directory and its subdirectories using recursion
+        Adds a file to a zip
          */
-        File directory = new File(directoryPath);
-        List<String> filePaths = new ArrayList<>();
-        filePaths.addAll(listFilesRecursivelyUtil(directory));
-        return filePaths;
-    }
-
-    public List<String> listFilesRecursivelyUtil(File directory) {
-        /*
-        Helper method for listFilesRecursively
-         */
-        File[] files = directory.listFiles();
-        List<String> filePaths = new ArrayList<>();
-        for (File file : files) {
-            if (file.isDirectory()) {
-                filePaths.addAll(listFiles(file.getAbsolutePath()));
-            } else {
-                if (!file.isHidden()) {
-                    filePaths.add(file.getAbsolutePath());
-                }
+        try (FileInputStream fis = new FileInputStream(file)) {
+            ZipEntry entry = new ZipEntry(base);
+            zos.putNextEntry(entry);
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = fis.read(buffer)) >= 0) {
+                zos.write(buffer, 0, length);
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return filePaths;
-    }
-
-    public boolean isSubdir(String file, String parentDir){
-        /*
-        Checks whether a file is a part of the original dir, or a subdir
-         */
-        return (file.substring(parentDir.length() + 1)).contains("/");
     }
 
     @Override
     public int compress(String dir, String filename) {
-        List<String> allFiles = listFiles(dir);
+        /*
+        Compresses a directory located in dir parameter and stores it in filename.zip
+         */
+        File directory = new File(dir);
+        File zip = new File(filename);
 
-        return 1;
+        try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zip + ".zip"))){
+            Stack<File> stack = new Stack<>();      // Stack for holding the directories
+            stack.push(directory);                  // Pushing root to the stack
+
+            while (!stack.isEmpty()){
+                File currentDir = stack.pop();
+                for (File f : currentDir.listFiles()){
+                    if (f.isDirectory() && !f.isHidden()){
+                        stack.push(f);
+                    } else{ if (f.isHidden()) {continue;} }  // Ignoring hidden directories
+
+                    if (!f.isDirectory()){
+                        // Zipping if we encounter a file
+                        Path dirPath = directory.toPath();
+                        String base = dirPath.relativize(f.toPath()).toString();
+                        addFileToZip(f, base, zos);
+                    }
+                }
+            }
+
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+        return (int) zip.length();
     }
-
-
 
     @Override
     public void decompress(String filename, String dir) {
+        File destinationDir = new File(dir);
+        if(!destinationDir.exists()) destinationDir.mkdirs();
+        byte[] buffer = new byte[1024];
+        try (ZipInputStream zis = new ZipInputStream(new FileInputStream(filename))){
+            ZipEntry ze = zis.getNextEntry();
+            while (ze != null){
+                String f = ze.getName();
+                File newFile = new File(dir + File.separator + f);
+                new File(newFile.getParent()).mkdirs();
+                FileOutputStream fos = new FileOutputStream(newFile);
+                int len;
+                while ((len = zis.read(buffer)) > 0) {
+                    fos.write(buffer, 0, len);
+                }
+                fos.close();
+                ze = zis.getNextEntry();
+            }
+            zis.closeEntry();
+        } catch (IOException ex){
+            System.out.println("No file!");
+        }
 
     }
 
     public static void main(String[] args) {
         Archivizer arch = new Archivizer();
-        arch.compress("/Users/jakubchmura/Desktop/Test_Java", "Dupa");
     }
 }
