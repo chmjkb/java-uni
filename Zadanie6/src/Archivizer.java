@@ -30,9 +30,6 @@ class Archivizer implements ArchivizerInterface{
         Compresses a directory located in dir parameter and stores it in filename.zip
          */
         File directory = new File(dir);
-        if (!filename.contains(".zip")){
-            filename += ".zip";
-        }
         File zip = new File(filename);
 
         try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zip))){
@@ -64,9 +61,7 @@ class Archivizer implements ArchivizerInterface{
 
     @Override
     public void decompress(String filename, String dir) {
-        if (!filename.contains(".zip")) {
-            filename += ".zip";
-        }
+
         try (ZipFile zf = new ZipFile(filename)) {
             Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zf.entries(); // Generating entries of a zip file
             while (entries.hasMoreElements()) {                                   // Iterating over entries
