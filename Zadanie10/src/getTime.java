@@ -2,7 +2,6 @@ import java.io.*;
 import java.net.ConnectException;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -19,9 +18,6 @@ public class Connector {
         BufferedReader br = null;
         BufferedWriter bw = null;
         ArrayList<Integer> numbers = new ArrayList();
-
-        System.out.println( "Odczyt czasu z serwera: " + host );
-
         try {
             so = new Socket( host, PORT );
             br = new BufferedReader( new InputStreamReader( so.getInputStream() ) );
@@ -54,7 +50,6 @@ public class Connector {
                     numbers.add(currentNum);
                 } catch (NumberFormatException nfe) {
                     System.out.println("error");
-                    continue;
                 }
 
             }
